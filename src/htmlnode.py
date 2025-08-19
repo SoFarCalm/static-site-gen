@@ -15,9 +15,23 @@ class HTMLNode:
         raise NotImplementedError("child classes will override")
     
     def props_to_html(self):
-        #return a string comprised of all the key-value pairs in the props dict
         props_string = ''
         for key,value in self.props.items():
             props_string = props_string + f'{key}="{value}" '
 
         return props_string
+
+class LeafNode(HTMLNode):
+    def __init__(self, tag: str, value: str, props: dict=None):
+        super().__init__(tag, value, props)
+    
+    def to_html(self):
+        if self.value is None:
+            raise ValueError("all lead nodes must have a value")
+        
+        if self.tag is None:
+            return self.value
+        
+        return f"<{self.tag}>{self.value}</{self.tag}>"
+        
+

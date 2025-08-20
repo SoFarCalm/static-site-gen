@@ -23,15 +23,35 @@ class HTMLNode:
 
 class LeafNode(HTMLNode):
     def __init__(self, tag: str, value: str, props: dict=None):
-        super().__init__(tag, value, props)
-    
+        super().__init__(tag=tag, value=value, props=props)
+
     def to_html(self):
         if self.value is None:
-            raise ValueError("all lead nodes must have a value")
-        
+            raise ValueError("all leaf nodes must have a value")
+
         if self.tag is None:
             return self.value
         
         return f"<{self.tag}>{self.value}</{self.tag}>"
-        
+
+class ParentNode(HTMLNode):
+    def __init__(self, tag: str, children: list, props: dict=None):
+        super().__init__(tag=tag, children=children, props=props)
+    
+    def to_html(self):
+        if self.tag is None:
+            raise ValueError("parent node must have a tag")
+        elif self.children is None:
+            raise ValueError("parent node must have children")
+        else:
+            html_string = ''
+
+            for child in self.children:
+                html_string = html_string + child.to_html()
+            
+            return f"<{self.tag}>{html_string}</{self.tag}>"
+            
+
+            
+
 

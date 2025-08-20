@@ -1,6 +1,7 @@
-from textnode import TextType
+import re
+from textnode import TextNode, TextType
 
-def split_nodes_delimiter(old_nodes, delimiter, text_type):
+def split_nodes_delimiter(old_nodes: list, delimiter: str, text_type: TextType):
     new_nodes = []
 
     if len(old_nodes) == 0:
@@ -28,7 +29,20 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
                 else:
                     created_nodes.append(TextNode(split_node[i], text_type))
                 i += 1
-            
-            new_nodes.extend(created_nodes)
-    
+
+        new_nodes.extend(created_nodes)
+
     return new_nodes
+
+#def split_nodes_images(old_nodes: list):
+
+
+def extract_markdown_images(text):
+    image_pattern = r"!\[(.*?)\]\((.*?)\)"
+    image_tuples = re.findall(image_pattern, text)
+    return image_tuples
+
+def extract_markdown_links(text):
+    link_pattern = r"\[(.*?)\]\((.*?)\)"
+    link_tuples = re.findall(link_pattern, text)
+    return link_tuples

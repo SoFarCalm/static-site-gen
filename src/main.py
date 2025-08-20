@@ -1,7 +1,8 @@
 from textnode import TextType, TextNode
+from mdconversion import extract_markdown_links
 
 def main():
-    test_string = "``"
-    print(len(test_string.split("`")))
+    test_string = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+    print(extract_markdown_links(test_string))
 
 main()

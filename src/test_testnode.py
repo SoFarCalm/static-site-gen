@@ -8,11 +8,15 @@ class TestTextNode(unittest.TestCase):
         node = TextNode("This is a text node", TextType.BOLD)
         node2 = TextNode("This is a text node", TextType.BOLD)
         self.assertEqual(node, node2)
-    
-    def test_repr(self):
+
+    def test_repr_non_url(self):
         node = TextNode("This is a test text node", TextType.BOLD)
-        self.assertEqual(node.__repr__(), "TextNode(This is a test text node, b, None)")
+        self.assertEqual(node.__repr__(), "TextNode(This is a test text node, TextType.BOLD)")
     
+    def test_repr_url(self):
+        node = TextNode("This is a test text node", TextType.LINK, "http://example.com")
+        self.assertEqual(node.__repr__(), "TextNode(This is a test text node, TextType.LINK, http://example.com)")
+
     def test_url(self):
         node = TextNode("This is a url node", TextType.LINK)
         self.assertEqual(node.url, None)

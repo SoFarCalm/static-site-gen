@@ -1,9 +1,6 @@
 import os
 import shutil
 
-src_path = '/home/lonniedev/workspace/github/sofarcalm/static-site-gen/static'
-dest_path = '/home/lonniedev/workspace/github/sofarcalm/static-site-gen/public'
-
 def copy_static_files(src: str, dest: str):
     if os.path.exists(dest):
         shutil.rmtree(dest)

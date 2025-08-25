@@ -165,9 +165,11 @@ def get_blocktype(block):
         return BlockType.QUOTE
     elif block.startswith("- "):
         return BlockType.UNORDERED_LIST
-    elif block[0] == "1" and block[1] == ".":
-        split_block = block.split("\n")
-        
+    elif block.startswith("1."):
+        stripped_block = block.strip()
+        split_block = stripped_block.split("\n")
+        split_block = [line.strip() for line in split_block]
+
         for i in range(0, len(split_block)):
             if not (split_block[i].startswith(f"{i+1}.")):
                 return BlockType.PARAGRAPH
@@ -187,10 +189,13 @@ def block_text_to_children(block_text: str):
     return children
 
 def block_text_to_code(block_text: str):
-    #TODO Take care of different cases where new lines can be in the beginning and end of a string
-    if block_text[0] == "\n":
-        print("True")
-    text_node = TextNode(block_text, TextType.CODE)
+    stripped_text = block_text.strip()
+    text = stripped_text[3:-3]
+    if text[0] == '\n':
+        text = text[1:]
+    text = re.sub(r'  +', '', text)
+    final_text = text.strip(" ")
+    text_node = TextNode(final_text, TextType.CODE)
     html_node = text_node.text_node_to_html_node()
     return html_node
 
@@ -206,21 +211,19 @@ def get_html_header_level(block_text: str):
     
     return level
 
-def create_list_nodes(list_text: str, ordered: bool):
-
-    list_items = list_text.split("\n")
+def create_list_nodes(list_text: str):
+    text = list_text.strip()
+    list_items = text.split("\n")
     list_nodes = []
 
     for list_item in list_items:
         stripped_item = list_item.strip()
-        item = stripped_item[2:]
-        if item:
+        item = stripped_item[2:].strip()
+        if len(item) > 0:
             list_nodes.append(ParentNode("li", block_text_to_children(item)))
 
-    if ordered:
-        return ParentNode("ol", list_nodes)
-    else:
-        return ParentNode("ul", list_nodes)
+    return list_nodes
+
 
 def replace_markdown(markdown: str):
     markdown = markdown.replace("\n", "")
@@ -245,9 +248,9 @@ def markdown_to_html_node(markdown: str):
         elif block_type == BlockType.QUOTE:
             block_nodes.append(ParentNode(BlockType.QUOTE.value, block_text_to_children(markdown_block_replaced[1:])))
         elif block_type == BlockType.UNORDERED_LIST:
-            block_nodes.append(ParentNode(BlockType.UNORDERED_LIST.value, [create_list_nodes(markdown_block_replaced), False]))
+            block_nodes.append(ParentNode(BlockType.UNORDERED_LIST.value, create_list_nodes(markdown_block)))
         elif block_type == BlockType.ORDERED_LIST:
-            block_nodes.append(ParentNode(BlockType.ORDERED_LIST.value, [create_list_nodes(markdown_block_replaced), True]))
+            block_nodes.append(ParentNode(BlockType.ORDERED_LIST.value, create_list_nodes(markdown_block)))
         else:
             block_nodes.append(ParentNode(BlockType.PARAGRAPH.value, block_text_to_children(markdown_block_replaced)))
 

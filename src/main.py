@@ -1,19 +1,13 @@
 import re
 from textnode import TextType, TextNode
 from mdconversion import *
+from copy_static import copy_static_files
 
 def main():
 
-    md = """
-    ```
-    This is text that _should_ remain
-    the **same** even with inline stuff
-    ```
-    """
+    src_path = '/home/lonniedev/workspace/github/sofarcalm/static-site-gen/static'
+    dest_path = '/home/lonniedev/workspace/github/sofarcalm/static-site-gen/public'
 
-    print(block_text_to_code(md))
-    # node = markdown_to_html_node(md)
-    # html = node.to_html()
-    # print(node)
+    copy_static_files(src_path, dest_path)
 
 main()

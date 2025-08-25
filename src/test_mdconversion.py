@@ -193,37 +193,33 @@ class TestGetBlockType(unittest.TestCase):
 
 class TestMarkdownToHTMLNode(unittest.TestCase):
 
-    # def test_markdown_to_html_node(self):
-    #     markdown = "# Heading\n\nThis is a paragraph."
-    #     expected = ParentNode("div", [
-    #         ParentNode("h1", [TextNode("Heading", TextType.TEXT)]),
-    #         ParentNode("p", [TextNode("This is a paragraph.", TextType.TEXT)])
-    #     ])
-    #     print(markdown_to_html_node(markdown))
-    #     self.assertEqual(markdown_to_html_node(markdown), expected)
+    def test_markdown_to_html_node(self):
+        markdown = "# Heading\n\nThis is a paragraph."
+        node = markdown_to_html_node(markdown)
+        html = node.to_html()
+        self.assertEqual(html, "<div><h1> Heading</h1><p>This is a paragraph.</p></div>")
 
-    # def test_markdown_to_html_node_empty(self):
-    #     markdown = ""
-    #     expected = ParentNode("div", [])
-    #     self.assertEqual(markdown_to_html_node(markdown), expected)
-    
-    # def test_paragraphs(self):
-    #     md = """
-    # This is **bolded** paragraph
-    # text in a p
-    # tag here
+    def test_markdown_to_html_node_empty(self):
+        markdown = ""
+        node = markdown_to_html_node(markdown)
+        self.assertEqual(node.to_html(), "<div></div>")
 
-    # This is another paragraph with _italic_ text and `code` here
+    def test_paragraphs(self):
+        md = """
+    This is **bolded** paragraph
+    text in a p
+    tag here
 
-    # """
+    This is another paragraph with _italic_ text and `code` here
 
-    #     node = markdown_to_html_node(md)
-    #     html = node.to_html()
-    #     print(html)
-    #     self.assertEqual(
-    #         html,
-    #         "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>",
-    #     )
+    """
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>",
+        )
 
     def test_codeblock(self):
         md = """
@@ -237,7 +233,35 @@ class TestMarkdownToHTMLNode(unittest.TestCase):
         html = node.to_html()
         self.assertEqual(
             html,
-            "<div><pre><code>\nThis is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
+            "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
+        )
+
+    def test_unordered_list(self):
+        md = """
+    - Item 1
+    - Item 2
+    - Item 3
+    """
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><ul><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul></div>",
+        )
+
+    def test_ordered_list(self):
+        md = """
+    1. Item 1
+    2. Item 2
+    3. Item 3
+    """
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><ol><li>Item 1</li><li>Item 2</li><li>Item 3</li></ol></div>",
         )
 
 if __name__ == "__main__":

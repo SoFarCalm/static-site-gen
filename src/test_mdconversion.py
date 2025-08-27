@@ -175,21 +175,6 @@ class TestGetBlockType(unittest.TestCase):
         self.assertEqual(get_blocktype("1. Ordered item\n2. Another ordered item\n4. Yet another ordered item"), BlockType.PARAGRAPH)
         self.assertEqual(get_blocktype("Just a paragraph"), BlockType.PARAGRAPH)
 
-# class TestBlockToChildren(unittest.TestCase):
-
-#     def test_block_text_to_children(self):
-#         block = """
-#     This is **bolded** paragraph
-#     text in a p
-#     tag here
-
-#     This is another paragraph with _italic_ text and `code` here
-
-#     """
-#         expected = [
-#             ParentNode("h1", [TextNode("Heading", TextType.TEXT)])
-#         ]
-#         self.assertListEqual(block_text_to_children(block), expected)
 
 class TestMarkdownToHTMLNode(unittest.TestCase):
 
@@ -263,6 +248,20 @@ class TestMarkdownToHTMLNode(unittest.TestCase):
             html,
             "<div><ol><li>Item 1</li><li>Item 2</li><li>Item 3</li></ol></div>",
         )
+
+class TestExtractTitle(unittest.TestCase):
+
+    def test_extract_title(self):
+        markdown = "# Title\n\nThis is a paragraph."
+        self.assertEqual(extract_title(markdown), "Title")
+    
+    def test_extract_title_2(self):
+        markdown = "# Hello"
+        self.assertEqual(extract_title(markdown), "Hello")
+
+    def test_extract_title_no_heading(self):
+        markdown = "This is a paragraph."
+        self.assertRaises(Exception, extract_title, markdown)
 
 if __name__ == "__main__":
     unittest.main()

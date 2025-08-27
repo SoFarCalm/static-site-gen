@@ -1,4 +1,6 @@
 import re
+import os
+import shutil
 from enum import Enum
 from textnode import TextNode, TextType
 from htmlnode import HTMLNode, ParentNode, LeafNode
@@ -242,11 +244,11 @@ def markdown_to_html_node(markdown: str):
 
         if block_type == BlockType.HEADING:
             heading_level = get_html_header_level(markdown_block)
-            block_nodes.append(ParentNode(f"{BlockType.HEADING.value}{heading_level}", block_text_to_children(markdown_block_replaced[heading_level:])))
+            block_nodes.append(ParentNode(f"{BlockType.HEADING.value}{heading_level}", block_text_to_children(markdown_block_replaced[heading_level:].strip())))
         elif block_type == BlockType.CODE:
             block_nodes.append(ParentNode("pre", [block_text_to_code(markdown_block)]))
         elif block_type == BlockType.QUOTE:
-            block_nodes.append(ParentNode(BlockType.QUOTE.value, block_text_to_children(markdown_block_replaced[1:])))
+            block_nodes.append(ParentNode(BlockType.QUOTE.value, block_text_to_children(markdown_block_replaced[1:].strip())))
         elif block_type == BlockType.UNORDERED_LIST:
             block_nodes.append(ParentNode(BlockType.UNORDERED_LIST.value, create_list_nodes(markdown_block)))
         elif block_type == BlockType.ORDERED_LIST:
@@ -256,3 +258,46 @@ def markdown_to_html_node(markdown: str):
 
     parent_node = ParentNode("div", block_nodes)
     return parent_node
+
+def extract_title(markdown: str):
+    markdown_blocks = markdown_to_blocks(markdown)
+
+    if markdown_blocks:
+        first_block = markdown_blocks[0]
+        if get_blocktype(first_block) == BlockType.HEADING and get_html_header_level(first_block) == 1:
+            return first_block[1:].strip()
+        else:
+            raise Exception("Invalid markdown structure, please provide a valid Title")
+
+    return None
+
+def generate_page(from_path: str, template_path: str, dest_path: str, base_path: str):
+    print(f"Generating page from {from_path} using {template_path} to {dest_path}")
+
+    with open(from_path, 'r') as file:
+        md_content = file.read()
+    
+    with open(template_path, 'r') as file:
+        template_content = file.read()
+
+    final_content = template_content.replace("{{ Title }}", extract_title(md_content))
+    final_content = final_content.replace("{{ Content }}", markdown_to_html_node(md_content).to_html())
+    final_content = final_content.replace('href="/', f'href="{base_path}')
+    final_content = final_content.replace('src="/', f'src="{base_path}')
+
+    with open(dest_path, 'w') as file:
+        file.write(final_content)
+
+def generate_pages_recursive(dir_path_content: str, template_path: str, dest_dir_path: str, base_path: str):
+    if not os.path.exists(dest_dir_path):
+        os.makedirs(dest_dir_path)
+
+    if os.path.exists(dir_path_content):
+        for item in os.listdir(dir_path_content):
+            item_path = os.path.join(dir_path_content, item)
+            dest_path = os.path.join(dest_dir_path, item)
+            if os.path.isdir(item_path):
+                generate_pages_recursive(item_path, template_path, dest_path, base_path)
+            elif os.path.isfile(item_path) and item.endswith(".md"):
+                dest_path = os.path.join(dest_dir_path, item.replace(".md", ".html"))
+                generate_page(item_path, template_path, dest_path, base_path)

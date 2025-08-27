@@ -34,8 +34,12 @@ class LeafNode(HTMLNode):
 
         if self.tag is None:
             return self.value
-        
-        return f"<{self.tag}>{self.value}</{self.tag}>"
+        elif self.tag == "img":
+            return f"<{self.tag} src=\"{self.props.get('src')}\" alt=\"{self.props.get('alt')}\" />"
+        elif self.tag == "a":
+            return f"<{self.tag} href='{self.props.get('href')}'>{self.value}</{self.tag}>"
+        else:
+            return f"<{self.tag}>{self.value}</{self.tag}>"
 
 class ParentNode(HTMLNode):
     def __init__(self, tag: str, children: list, props: dict=None):

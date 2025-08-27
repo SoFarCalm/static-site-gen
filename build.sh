@@ -1,1 +1,1 @@
-python3 src/main.py "/https://github.com/SoFarCalm/static-site-gen/"
+python3 src/main.py "/static-site-gen/"

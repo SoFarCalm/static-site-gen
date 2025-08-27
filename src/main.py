@@ -5,10 +5,10 @@ from textnode import TextType, TextNode
 from mdconversion import *
 from copy_static import copy_static_files
 
-STATIC_PATH = "static"
-CONTENT_PATH = "content"
+STATIC_PATH = "static/"
+CONTENT_PATH = "content/"
 TEMPLATE_PATH = "template.html"
-DEST_PATH = "docs"
+DEST_PATH = "docs/"
 
 def main():
 

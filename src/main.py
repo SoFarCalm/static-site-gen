@@ -1,6 +1,5 @@
 import re
 import sys
-from variables import STATIC_PATH, PUBLIC_PATH, CONTENT_PATH, TEMPLATE_PATH, DEST_PATH
 from textnode import TextType, TextNode
 from mdconversion import *
 from copy_static import copy_static_files
